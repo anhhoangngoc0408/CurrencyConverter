@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>CurrencyX - Currency Converter</title>
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Work+Sans:wght@500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ══ HEADER ══ -->
+<header class="site-header">
+  <nav class="navbar navbar-expand-md">
+    <a class="navbar-brand" href="#">
+      <span class="material-symbols-outlined">currency_exchange</span>
+      CurrencyX
+    </a>
+    <button class="navbar-toggler border-0" type="button" data-toggle="collapse" data-target="#navMenu">
+      <span class="material-symbols-outlined" style="color:var(--on-surface)">menu</span>
+    </button>
+    <div class="collapse navbar-collapse" id="navMenu">
+      <ul class="navbar-nav mx-auto">
+        <li class="nav-item"><a class="nav-link active" href="#">Convert</a></li>
+        <li class="nav-item"><a class="nav-link" href="#">Charts</a></li>
+        <li class="nav-item"><a class="nav-link" href="#">Alerts</a></li>
+        <li class="nav-item"><a class="nav-link" href="#">More</a></li>
+      </ul>
+      <div class="d-flex align-items-center" style="gap:8px">
+        <button class="btn-login">Log In</button>
+        <div class="user-avatar">
+          <span class="material-symbols-outlined" style="font-size:22px">person</span>
+        </div>
+      </div>
+    </div>
+  </nav>
+</header>
+
+<!-- ══ HERO ══ -->
+<section class="hero-section">
+  <div class="container" style="max-width:1200px;position:relative;z-index:10">
+    <div class="text-center">
+      <h1 class="hero-title">World's Most Trusted Currency Converter</h1>
+      <p class="hero-subtitle">Check live rates, send money online and track market trends with the highest accuracy.</p>
+    </div>
+
+    <!-- WIDGET -->
+    <div class="conversion-widget">
+
+      <!-- Tabs -->
+      <div class="widget-tabs">
+        <button class="widget-tab active" id="tab-convert">
+          <span class="material-symbols-outlined">swap_horiz</span>
+          <span class="tab-text">Convert</span>
+        </button>
+        <button class="widget-tab" id="tab-send">
+          <span class="material-symbols-outlined">send</span>
+          <span class="tab-text">Send</span>
+        </button>
+        <button class="widget-tab" id="tab-charts">
+          <span class="material-symbols-outlined">show_chart</span>
+          <span class="tab-text">Charts</span>
+        </button>
+        <button class="widget-tab" id="tab-alerts">
+          <span class="material-symbols-outlined">notifications</span>
+          <span class="tab-text">Alerts</span>
+        </button>
+      </div>
+
+      <!-- Content -->
+      <div class="widget-content">
+        <div class="row align-items-end no-gutters" style="gap:0;margin:0">
+
+          <!-- Amount -->
+          <div class="col-12 col-md-3" style="padding:0 6px 0 0">
+            <label class="cx-label" for="amount-input">Amount</label>
+            <div class="amount-wrap">
+              <span class="amount-symbol" id="amount-symbol">$</span>
+              <input class="amount-input" type="number" id="amount-input" value="1" min="0" step="any">
+            </div>
+          </div>
+
+          <!-- From -->
+          <div class="col-12 col-md-4 mt-3 mt-md-0" style="padding:0 4px">
+            <label class="cx-label">From</label>
+            <div class="cx-selector-wrap">
+              <div class="cx-selector" id="from-sel" onclick="toggleDropdown('from')">
+                <div class="cx-flag"><img id="from-flag" src="https://flagcdn.com/us.svg" alt="USD"></div>
+                <div class="cx-info">
+                  <span class="cx-code" id="from-code">USD</span>
+                  <span class="cx-name" id="from-name">US Dollar</span>
+                </div>
+                <span class="material-symbols-outlined">expand_more</span>
+              </div>
+              <div class="cx-dropdown" id="from-drop"></div>
+            </div>
+          </div>
+
+          <!-- Swap -->
+          <div class="col-12 col-md-1 mt-3 mt-md-0 d-flex justify-content-center swap-col" style="padding:0 4px">
+            <button class="swap-btn" onclick="swapCurrencies()" title="Swap currencies">
+              <span class="material-symbols-outlined">swap_horiz</span>
+            </button>
+          </div>
+
+          <!-- To -->
+          <div class="col-12 col-md-4 mt-3 mt-md-0" style="padding:0 0 0 4px">
+            <label class="cx-label">To</label>
+            <div class="cx-selector-wrap">
+              <div class="cx-selector" id="to-sel" onclick="toggleDropdown('to')">
+                <div class="cx-flag"><img id="to-flag" src="https://flagcdn.com/eu.svg" alt="EUR"></div>
+                <div class="cx-info">
+                  <span class="cx-code" id="to-code">EUR</span>
+                  <span class="cx-name" id="to-name">Euro</span>
+                </div>
+                <span class="material-symbols-outlined">expand_more</span>
+              </div>
+              <div class="cx-dropdown" id="to-drop"></div>
+            </div>
+          </div>
+
+        </div><!-- /row -->
+
+        <div class="cx-error" id="cx-error">
+          <span class="material-symbols-outlined" style="font-size:14px">error</span>
+          Failed to load exchange rates. Please check your connection.
+        </div>
+
+        <!-- Result -->
+        <div class="result-area">
+          <div class="result-left">
+            <p class="result-eq" id="result-eq">1.00 USD =</p>
+            <p class="result-val">
+              <span id="result-num">
+                <span class="cx-spinner"></span>
+              </span>
+              <span class="result-cur" id="result-cur">EUR</span>
+            </p>
+            <p class="result-ts" id="result-ts">Loading mid-market rate…</p>
+          </div>
+          <div class="result-actions">
+            <button class="btn-track">Track Rate</button>
+            <button class="btn-send">Send Money</button>
+          </div>
+        </div>
+      </div><!-- /widget-content -->
+
+    </div><!-- /conversion-widget -->
+  </div>
+</section>
+
+<!-- ══ INFO SECTION ══ -->
+<section class="info-section">
+  <div class="container" style="max-width:1200px">
+    <div class="row">
+
+      <!-- Rates Table -->
+      <div class="col-12 col-md-8 mb-4 mb-md-0 pr-md-3">
+        <div class="section-card">
+          <div class="card-inner">
+            <h3 class="section-title">Live Exchange Rates</h3>
+            <div class="table-responsive">
+              <table class="rates-table">
+                <thead>
+                  <tr>
+                    <th>Pair</th>
+                    <th>Rate</th>
+                    <th>Inverse</th>
+                    <th>Change</th>
+                  </tr>
+                </thead>
+                <tbody id="rates-tbody">
+                  <tr><td colspan="4" style="text-align:center;padding:24px;color:var(--on-surface-variant)">
+                    <span class="cx-spinner"></span> Loading rates…
+                  </td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sidebar -->
+      <div class="col-12 col-md-4 pl-md-2">
+        <div class="section-card mb-3">
+          <div class="card-inner">
+            <h3 class="section-title" style="font-size:18px;margin-bottom:16px">Quick Access</h3>
+            <div class="chips-wrap">
+              <button class="chip" onclick="setConverter('USD','EUR')">USD → EUR</button>
+              <button class="chip" onclick="setConverter('EUR','USD')">EUR → USD</button>
+              <button class="chip" onclick="setConverter('AUD','USD')">AUD → USD</button>
+              <button class="chip" onclick="setConverter('VND','USD')">VND → USD</button>
+              <button class="chip" onclick="setConverter('USD','VND')">USD → VND</button>
+              <button class="chip" onclick="setConverter('EUR','VND')">EUR → VND</button>
+              <button class="chip" onclick="setConverter('AUD','VND')">AUD → VND</button>
+              <button class="chip" onclick="setConverter('EUR','AUD')">EUR → AUD</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="info-card">
+          <div class="d-flex" style="gap:16px">
+            <span class="material-symbols-outlined">info</span>
+            <div>
+              <h4>Did you know?</h4>
+              <p>Sign up for a business account to get preferential rates and lower transaction fees for large international transfers.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ══ FOOTER ══ -->
+<footer class="site-footer">
+  <div class="container" style="max-width:1200px">
+    <div class="row">
+      <div class="col-12 col-md-4 mb-4 mb-md-0">
+        <div class="footer-brand">
+          <span class="material-symbols-outlined">currency_exchange</span>
+          CurrencyX
+        </div>
+        <p class="footer-desc">Providing accurate exchange rate data for AUD, EUR, VND and USD — updated daily.</p>
+      </div>
+      <div class="col-6 col-md-2 mb-4 mb-md-0">
+        <h5 class="footer-heading">Products</h5>
+        <ul class="footer-links">
+          <li><a href="#">Mobile App</a></li>
+          <li><a href="#">Rate API</a></li>
+          <li><a href="#">Business Solutions</a></li>
+        </ul>
+      </div>
+      <div class="col-6 col-md-3 mb-4 mb-md-0">
+        <h5 class="footer-heading">Support</h5>
+        <ul class="footer-links">
+          <li><a href="#">Help Center</a></li>
+          <li><a href="#">FAQ</a></li>
+          <li><a href="#">Contact Us</a></li>
+        </ul>
+      </div>
+      <div class="col-6 col-md-3">
+        <h5 class="footer-heading">Legal</h5>
+        <ul class="footer-links">
+          <li><a href="#">Privacy Policy</a></li>
+          <li><a href="#">Terms of Service</a></li>
+        </ul>
+      </div>
+    </div>
+    <div style="border-top:1px solid rgba(240,241,242,0.12);margin-top:40px;padding-top:20px">
+      <p style="font-size:12px;opacity:0.5;margin:0">© 2026 CurrencyX. Exchange rates provided by ExchangeRate-API. For informational purposes only.</p>
+    </div>
+  </div>
+</footer>
+
+<!-- ══ MOBILE BOTTOM NAV ══ -->
+<nav class="mobile-nav">
+  <div class="mobile-nav-inner">
+    <button class="m-nav-btn active">
+      <span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24">swap_horiz</span>
+      <span class="m-label">Convert</span>
+    </button>
+    <button class="m-nav-btn">
+      <span class="material-symbols-outlined">show_chart</span>
+      <span class="m-label">Charts</span>
+    </button>
+    <button class="m-nav-btn">
+      <span class="material-symbols-outlined">notifications</span>
+      <span class="m-label">Alerts</span>
+    </button>
+    <button class="m-nav-btn">
+      <span class="material-symbols-outlined">menu</span>
+      <span class="m-label">More</span>
+    </button>
+  </div>
+</nav>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
