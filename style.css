@@ -26,8 +26,8 @@ body{font-family:'Inter',sans-serif;background:var(--surface);color:var(--on-sur
 .material-symbols-outlined{font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24;vertical-align:middle;line-height:1}
 
 /* ── HEADER ── */
-.site-header{background:#F7F8F9;border-bottom:1px solid #e2e8f0;position:sticky;top:0;z-index:1000;height:64px}
-.site-header .navbar{height:64px;padding:0 24px;max-width:1200px;margin:0 auto}
+.site-header{background:#F7F8F9;border-bottom:1px solid #e2e8f0;position:sticky;top:0;z-index:1000}
+.site-header .navbar{min-height:64px;padding:0 20px;max-width:1200px;margin:0 auto;align-items:center}
 .navbar-brand{display:flex;align-items:center;gap:8px;font-size:18px;font-weight:700;color:#191c1d!important;letter-spacing:-0.01em;text-decoration:none}
 .navbar-brand .material-symbols-outlined{color:var(--primary-container);font-size:24px}
 .nav-link{font-size:15px;font-weight:500;color:#64748b!important;padding:8px 12px!important;border-radius:8px;transition:all 0.2s}
@@ -165,18 +165,58 @@ body{font-family:'Inter',sans-serif;background:var(--surface);color:var(--on-sur
 @media(max-width:767px){
   body{padding-bottom:72px}
   .mobile-nav{display:block}
-  .hero-section{padding:40px 0}
-  .hero-title{font-size:26px;line-height:34px}
-  .hero-subtitle{font-size:15px;margin-bottom:32px}
-  .widget-content{padding:20px 16px 16px}
-  .widget-tab{font-size:12px;padding:14px 6px}
+
+  /* ── Mobile navbar menu ── */
+  .navbar-collapse{
+    background:#fff;
+    border-top:1px solid #e8eaed;
+    border-bottom:1px solid #e8eaed;
+    box-shadow:0 8px 20px rgba(0,17,51,0.12);
+    margin:0 -20px;        /* cancel navbar horizontal padding */
+    padding:8px 12px 14px;
+  }
+  .navbar-collapse .navbar-nav{margin-bottom:0}
+  /* Large, tappable nav links */
+  .navbar-collapse .nav-link{
+    padding:13px 14px!important;
+    border-radius:8px;
+    font-size:15px!important;
+    font-weight:500;
+    color:var(--on-surface)!important;
+    min-height:48px;
+    display:flex!important;
+    align-items:center;
+  }
+  .navbar-collapse .nav-link.active{
+    background:rgba(0,108,224,0.07);
+    color:var(--primary-container)!important;
+  }
+  .navbar-collapse .nav-link:hover{background:#f1f5f9}
+  /* Login + avatar row at the bottom of the menu */
+  .navbar-collapse>.d-flex{
+    padding:12px 8px 2px;
+    margin-top:8px;
+    border-top:1px solid #e8eaed;
+  }
+
+  /* ── Hero + widget ── */
+  .hero-section{padding:32px 0}
+  .hero-title{font-size:24px;line-height:32px}
+  .hero-subtitle{font-size:14px;line-height:22px;margin-bottom:24px}
+  .widget-content{padding:16px 14px 14px}
+  .widget-tab{font-size:11px;padding:12px 4px}
   .widget-tab .tab-text{display:none}
-  .result-val{font-size:30px;line-height:38px}
-  .result-val .result-cur{font-size:18px}
+  .widget-tab .material-symbols-outlined{font-size:18px}
+
+  /* ── Result ── */
+  .result-val{font-size:28px;line-height:36px}
+  .result-val .result-cur{font-size:17px}
   .result-area{flex-direction:column;align-items:flex-start}
-  .result-actions{width:100%}
-  .btn-track,.btn-send{flex:1;text-align:center}
-  .info-section{padding:40px 0}
+  .result-actions{width:100%;flex-direction:column}
+  .btn-track,.btn-send{width:100%;justify-content:center}
+
+  /* ── Sections ── */
+  .info-section{padding:32px 0}
   .swap-col{padding:4px 0!important}
 }
 @media(min-width:768px) and (max-width:991px){
