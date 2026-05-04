@@ -68,10 +68,17 @@ async function ensureRate(base) {
 // ── CONVERT ──
 async function runConvert() {
   showError(false);
-  const raw = document.getElementById('amount-input').value;
-  const amount = parseFloat(raw);
+  const input  = document.getElementById('amount-input');
+  let   amount = parseFloat(input.value);
 
-  if (isNaN(amount) || amount < 0) {
+  // Silently clamp negatives — the keydown guard below usually stops them,
+  // but paste / autofill can still sneak one through.
+  if (amount < 0) {
+    amount = 0;
+    input.value = 0;
+  }
+
+  if (isNaN(amount)) {
     document.getElementById('result-num').textContent = '—';
     return;
   }
@@ -191,13 +198,46 @@ function setConverter(from, to) {
 }
 
 // ── FORMAT ──
+// Word-suffix scales per currency language
+const SCALES = {
+  USD: [ { v:1e12, w:'trillion' }, { v:1e9, w:'billion' }, { v:1e6, w:'million' } ],
+  EUR: [ { v:1e12, w:'trillion' }, { v:1e9, w:'billion' }, { v:1e6, w:'million' } ],
+  AUD: [ { v:1e12, w:'trillion' }, { v:1e9, w:'billion' }, { v:1e6, w:'million' } ],
+  VND: [ { v:1e12, w:'nghìn tỷ' }, { v:1e9, w:'tỷ' }, { v:1e6, w:'triệu' }, { v:1e3, w:'nghìn' } ],
+};
+
 function fmt(n, currency) {
-  if (!isFinite(n) || n === null) return '—';
-  if (currency === 'VND') {
+  if (!isFinite(n) || n === null || n === undefined) return '—';
+
+  const scales      = SCALES[currency] || SCALES.USD;
+  const isVND       = currency === 'VND';
+  // VND is already large-valued so abbreviate from 1 000; others from 1 000 000
+  const wordFloor   = isVND ? 1e3 : 1e6;
+  const abs         = Math.abs(n);
+
+  if (abs >= wordFloor) {
+    for (const { v, w } of scales) {
+      if (abs >= v) {
+        const scaled = n / v;
+        const dec    = Math.abs(scaled) >= 100 ? 1 : Math.abs(scaled) >= 10 ? 2 : 3;
+        const num    = new Intl.NumberFormat('en-US', {
+          minimumFractionDigits: 0,
+          maximumFractionDigits: dec,
+        }).format(scaled);
+        return `${num} ${w}`;
+      }
+    }
+  }
+
+  // Small / fractional numbers
+  if (isVND) {
     return new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(Math.round(n));
   }
-  const dec = n < 0.001 ? 8 : n < 0.01 ? 6 : n < 1 ? 6 : n < 100 ? 4 : 2;
-  return new Intl.NumberFormat('en-US', { minimumFractionDigits: dec, maximumFractionDigits: dec }).format(n);
+  const dec = abs < 0.001 ? 8 : abs < 0.01 ? 6 : abs < 1 ? 6 : abs < 100 ? 4 : 2;
+  return new Intl.NumberFormat('en-US', {
+    minimumFractionDigits: dec,
+    maximumFractionDigits: dec,
+  }).format(n);
 }
 
 function fmtTime(ts) {
@@ -219,8 +259,19 @@ function showError(show) {
 
 // ── LISTENERS ──
 function setupListeners() {
-  // Amount input — debounced
-  document.getElementById('amount-input').addEventListener('input', () => {
+  // Amount input — block negative / scientific notation keys, then debounce
+  const amountInput = document.getElementById('amount-input');
+
+  amountInput.addEventListener('keydown', e => {
+    // '-' (minus) and 'e'/'E' (scientific notation like 1e5) are not meaningful here
+    if (e.key === '-' || e.key === 'e' || e.key === 'E' || e.key === '+') {
+      e.preventDefault();
+    }
+  });
+
+  amountInput.addEventListener('input', () => {
+    // Clamp any negative that slipped in via paste or browser autofill
+    if (parseFloat(amountInput.value) < 0) amountInput.value = '0';
     clearTimeout(convertTimer);
     convertTimer = setTimeout(runConvert, 350);
   });
